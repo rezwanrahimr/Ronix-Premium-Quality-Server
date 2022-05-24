@@ -88,6 +88,14 @@ async function run(){
             })
         });
 
+        // get all review
+        app.get("/review",async(req,res)=>{
+            const quarry = {};
+            const cursor = reviewsCollection.find(quarry);
+            const review = await cursor.toArray();
+            res.send(review);
+        })
+
     }
     finally{
 
