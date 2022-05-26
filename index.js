@@ -32,6 +32,14 @@ async function run(){
             res.send(tools);
         })
 
+          // add a new tools
+          app.post("/tools", async (req, res) => {
+            const addNewItem = req.body;
+            const result = await toolsCollection.insertOne(addNewItem);
+            res.send(result);
+          });
+
+
         // Avilabe Quantity decrease.
         app.post("/available/:id",async(req,res) => {
             if(Number(req.body.availableQuantity < 0)){
@@ -96,6 +104,7 @@ async function run(){
             res.send(review);
         })
 
+      
     }
     finally{
 
