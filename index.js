@@ -40,13 +40,13 @@ async function run(){
           });
 
         //  get a spacipic tools
-        app.get("/tools/:id",async(req,res) =>{
+  /*       app.get("/tools/:id",async(req,res) =>{
             const id = req.params.id;
             const quarry = { _id: ObjectId(id)};
             const cursor = toolsCollection.find(quarry);
             const tools = await cursor.toArray();
             res.send(tools);
-        })
+        }) */
 
         // Avilabe Quantity decrease.
         app.post("/available/:id",async(req,res) => {
