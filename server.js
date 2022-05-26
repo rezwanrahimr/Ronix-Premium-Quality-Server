@@ -49,8 +49,8 @@ client.connect((err) => {
     if (!user) {
       usersCollection.insertOne(
         {
-          email: email.toLowerCase(),
-          role: !role ? "user" : role.toLowerCase(),
+          email: email,
+          role: !role ? "user" : role,
           profile_picture,
         },
         (err, result) => {
@@ -80,7 +80,7 @@ client.connect((err) => {
     const { email, role } = req.body;
     usersCollection.updateOne(
       { email },
-      { $set: { role: !role ? "admin" : role.toLowerCase() } },
+      { $set: { role: !role ? "admin" : role } },
       (err, result) => {
         if (err) {
           res.status(500).send({
