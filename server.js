@@ -253,7 +253,7 @@ client.connect((err) => {
   // Get Single Order
   app.get("/api/get-order", async (req, res) => {
     const { email } = req.query;
-    const order = await ordersCollection.findOne({ email });
+    const order = await ordersCollection.find({ email });
     if (order) {
       res.status(200).send({
         status: 1,
