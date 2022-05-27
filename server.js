@@ -205,15 +205,24 @@ client.connect((err) => {
         currency: "usd",
         payment_method_types: ["card"],
       });
-      res.status(201).send({
-        status: 1,
-        message: "Order Placed Successfully",
-        client_secret: payment.client_secret,
-        created: payment.created,
-        amount: payment.amount,
-        currency: payment.currency,
-        orderId: storedOrders.insertedId,
-      });
+      if(payment.client_secret ){
+
+        res.status(201).send({
+          status: 1,
+          message: "Order Placed Successfully",
+          client_secret: payment.client_secret,
+          created: payment.created,
+          amount: payment.amount,
+          currency: payment.currency,
+          orderId: storedOrders.insertedId,
+        });
+
+      } else {
+        res.status(500).send({
+          status: 0,
+          message: "Error Occured",
+        });
+      }
     } else {
       res.status(500).send({
         status: 0,
