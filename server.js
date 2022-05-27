@@ -21,7 +21,7 @@ app.use(
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  
+
   res.send("Hello World");
 });
 
@@ -194,69 +194,94 @@ client.connect((err) => {
 
   // Process Order
   app.post("/api/process-order", async (req, res) => {
-    const {  total } = req.body;
-    const storedOrders = await ordersCollection.insertOne({
-     ...req.body,
-      status: "pending",
-    });
-    if (storedOrders) {
-      const payment = await Stripe.paymentIntents.create({
-        amount: total * 100,
-        currency: "usd",
-        payment_method_types: ["card"],
+
+    try {
+
+      const { total } = req.body;
+      const storedOrders = await ordersCollection.insertOne({
+        ...req.body,
+        status: "pending",
       });
-      if(payment.client_secret ){
-
-        res.status(201).send({
-          status: 1,
-          message: "Order Placed Successfully",
-          client_secret: payment.client_secret,
-          created: payment.created,
-          amount: payment.amount,
-          currency: payment.currency,
-          orderId: storedOrders.insertedId,
+      if (storedOrders) {
+        const payment = await Stripe.paymentIntents.create({
+          amount: total * 100,
+          currency: "usd",
+          payment_method_types: ["card"],
         });
+        if (payment.client_secret) {
 
+          res.status(201).send({
+            status: 1,
+            message: "Order Placed Successfully",
+            client_secret: payment.client_secret,
+            created: payment.created,
+            amount: payment.amount,
+            currency: payment.currency,
+            orderId: storedOrders.insertedId,
+          });
+
+        } else {
+          res.status(500).send({
+            status: 0,
+            message: "Error Occured",
+          });
+        }
       } else {
         res.status(500).send({
           status: 0,
           message: "Error Occured",
         });
       }
-    } else {
+
+
+    } catch (error) {
+
       res.status(500).send({
         status: 0,
         message: "Error Occured",
       });
+
     }
+
   });
 
   app.post("/api/re-payment", async (req, res) => {
-    const {  total,id } = req.body;
+    const { total, id } = req.body;
 
-    const payment = await Stripe.paymentIntents.create({
-      amount: total * 100,
-      currency: "usd",
-      payment_method_types: ["card"],
-    });
-    if (payment.client_secret) {
-      
-      res.status(201).send({
-        status: 1,
-        message: "Secret Generated Successfully",
-        client_secret: payment.client_secret,
-        created: payment.created,
-        amount: payment.amount,
-        currency: payment.currency,
-        orderId: id,
+    try {
+
+      const payment = await Stripe.paymentIntents.create({
+        amount: total * 100,
+        currency: "usd",
+        payment_method_types: ["card"],
       });
-    } else {
+      if (payment.client_secret) {
+
+        res.status(201).send({
+          status: 1,
+          message: "Secret Generated Successfully",
+          client_secret: payment.client_secret,
+          created: payment.created,
+          amount: payment.amount,
+          currency: payment.currency,
+          orderId: id,
+        });
+      } else {
+        res.status(500).send({
+          status: 0,
+          message: "Error Occured",
+        });
+      }
+
+    } catch (error) {
       res.status(500).send({
         status: 0,
         message: "Error Occured",
       });
+
     }
-    
+
+
   });
 
   // Update Order Status
@@ -335,12 +360,12 @@ client.connect((err) => {
     }
   });
   // get all tools items.
-  app.get("/tools",async(req,res)=>{
+  app.get("/tools", async (req, res) => {
     const quarry = {};
     const cursor = toolsCollection.find(quarry);
     const tools = await cursor.toArray();
     res.send(tools);
-})
+  })
 
   // add a new tools
   app.post("/tools", async (req, res) => {
@@ -349,69 +374,69 @@ client.connect((err) => {
     res.send(result);
   });
 
-// Avilabe Quantity decrease.
-app.post("/available/:id",async(req,res) => {
-    if(Number(req.body.availableQuantity < 0)){
-        res.send({status: 0, message: 'Oops! Stock out'});
-        return;
+  // Avilabe Quantity decrease.
+  app.post("/available/:id", async (req, res) => {
+    if (Number(req.body.availableQuantity < 0)) {
+      res.send({ status: 0, message: 'Oops! Stock out' });
+      return;
     }
 
     const id = req.params.id;
-    const quarry = {_id: ObjectId(id)};
-    const result = await toolsCollection.updateOne(quarry,{
-        $set: { availableQuantity: req.body.availableQuantity}
+    const quarry = { _id: ObjectId(id) };
+    const result = await toolsCollection.updateOne(quarry, {
+      $set: { availableQuantity: req.body.availableQuantity }
     });
-    if(result.modifiedCount > 0){
-        res.send({ status: 1, message: "Order place successfully"});
+    if (result.modifiedCount > 0) {
+      res.send({ status: 1, message: "Order place successfully" });
     }
-    else{
-        res.send({status: 0, message: "order place Faild"})
+    else {
+      res.send({ status: 0, message: "order place Faild" })
     }
-    
-});
 
-// increase Quantity.
-app.post("/increase/:id",async(req,res) => {
-    if(Number(req.body.availableQuantity < 0)){
-        res.send({status: 0, message: "Oops! Restock Faild"});
-        return;
+  });
+
+  // increase Quantity.
+  app.post("/increase/:id", async (req, res) => {
+    if (Number(req.body.availableQuantity < 0)) {
+      res.send({ status: 0, message: "Oops! Restock Faild" });
+      return;
     }
-    const {availableQuantity,stock} = req.body;
+    const { availableQuantity, stock } = req.body;
     const id = req.params.id;
-    const quarry = {_id: ObjectId(id)};
-    const result = await toolsCollection.updateOne(quarry,{
-        $set: {availableQuantity: Number(availableQuantity) + Number(stock)},
+    const quarry = { _id: ObjectId(id) };
+    const result = await toolsCollection.updateOne(quarry, {
+      $set: { availableQuantity: Number(availableQuantity) + Number(stock) },
     });
-    if(result.modifiedCount > 0){
-        res.send({status: 1, message: "restock successfully"});
+    if (result.modifiedCount > 0) {
+      res.send({ status: 1, message: "restock successfully" });
     }
-    else{
-        res.send({status: 0,message:"restock faild"});
+    else {
+      res.send({ status: 0, message: "restock faild" });
     }
-});
+  });
 
-// Insert Reviews.
-app.post("/review",(req,res) =>{
-    reviewsCollection.insertOne(req.body, (err)=>{
-        if(err){
-            res.send(err);
-        }
-        else{
-            res.send({
-                status: 1,
-                message: "successfully insert one",
-            })
-        }
+  // Insert Reviews.
+  app.post("/review", (req, res) => {
+    reviewsCollection.insertOne(req.body, (err) => {
+      if (err) {
+        res.send(err);
+      }
+      else {
+        res.send({
+          status: 1,
+          message: "successfully insert one",
+        })
+      }
     })
-});
+  });
 
-// get all review
-app.get("/review",async(req,res)=>{
+  // get all review
+  app.get("/review", async (req, res) => {
     const quarry = {};
     const cursor = reviewsCollection.find(quarry);
     const review = await cursor.toArray();
     res.send(review);
-})
+  })
 
 
 });
