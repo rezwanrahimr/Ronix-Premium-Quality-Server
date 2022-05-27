@@ -192,10 +192,9 @@ client.connect((err) => {
 
   // Process Order
   app.post("/api/process-order", async (req, res) => {
-    const { email, orders, total } = req.body;
+    const {  total } = req.body;
     const storedOrders = await ordersCollection.insertOne({
-      email,
-      orders,
+     ...req.body,
       status: "pending",
     });
     if (storedOrders) {
