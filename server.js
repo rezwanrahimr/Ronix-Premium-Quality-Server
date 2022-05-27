@@ -190,6 +190,8 @@ client.connect((err) => {
     });
   });
 
+
+
   // Process Order
   app.post("/api/process-order", async (req, res) => {
     const {  total } = req.body;
@@ -218,6 +220,34 @@ client.connect((err) => {
         message: "Error Occured",
       });
     }
+  });
+
+  app.post("/api/re-payment", async (req, res) => {
+    const {  total,id } = req.body;
+
+    const payment = await Stripe.paymentIntents.create({
+      amount: total * 100,
+      currency: "usd",
+      payment_method_types: ["card"],
+    });
+    if (payment.client_secret) {
+      
+      res.status(201).send({
+        status: 1,
+        message: "Secret Generated Successfully",
+        client_secret: payment.client_secret,
+        created: payment.created,
+        amount: payment.amount,
+        currency: payment.currency,
+        orderId: id,
+      });
+    } else {
+      res.status(500).send({
+        status: 0,
+        message: "Error Occured",
+      });
+    }
+    
   });
 
   // Update Order Status
