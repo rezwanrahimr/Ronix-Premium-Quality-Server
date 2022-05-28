@@ -43,20 +43,16 @@ client.connect((err) => {
   const profileCollection = client.db("Ronix").collection("profile");
   
   // Store Profile Data.
-  app.post("/api/update-profile", async (req, res) => {
-    profileCollection.insertOne(req.body, (err, result) => {
-      if (err) {
-        res.status(500).send({
-          status: 0,
-          message: "Error Occured",
-        });
-      } else {
-        res.status(201).send({
-          status: 1,
-          message: "Product Added Successfully",
-        });
-      }
-    });
+  app.patch("/api/user/:email", async (req, res) => {
+    const email = req.params.email;
+    const user = req.body;
+    const filter = {email: email};
+    const options = {upsert: true};
+    const updateDoc = {
+      $set: user,
+    };
+    const result = await productsCollection.updateOne(filter,updateDoc,options);
+    res.send(result);
   });
 
   // Get Profile Data.
