@@ -36,11 +36,11 @@ client.connect((err) => {
     `${!!err ? "Database Connection Failed" : "Database Connection Successful"}`
   );
   const productsCollection = client.db("Ronix").collection("products");
-  const userCollection = client.db("Ronix").collection("users");
   const ordersCollection = client.db("Ronix").collection("orders");
   const toolsCollection = client.db("Ronix").collection("tools");
   const reviewsCollection = client.db("Ronix").collection("review");
   const profileCollection = client.db("Ronix").collection("profile");
+  const usersCollection = client.db('Ronix').collection('users')
   
   // Store Profile Data.
   app.post("/api/update-profile", async (req, res) => {
@@ -69,23 +69,10 @@ client.connect((err) => {
     });
   });
 
-  // Store user
-  app.put('/user/:email',async(req,res) =>{
-     const email = req.params.email;
-     const user = req.body;
-      const filter = {email: email};
-      const options = {upsert: true};
-      const updateDoc = {
-        $set: {
-          plot: user,
-        },
-      }
-      const result = await userCollection.updateOne(filter,updateDoc,options);
-      res.send(result);
-  })
+
 
   // Create a new account
-  /* app.post("/api/create-account", async (req, res) => {
+  app.post("/api/create-account", async (req, res) => {
     const { email, role, profile_picture } = req.body;
     const user = await usersCollection.findOne({ email });
 
@@ -138,7 +125,7 @@ client.connect((err) => {
         }
       }
     );
-  }); */
+  });
 
   //  Get Single Product
   app.get("/api/product/:id", async (req, res) => {
