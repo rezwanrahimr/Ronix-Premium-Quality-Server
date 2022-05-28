@@ -123,15 +123,7 @@ app.get('/user',async(req,res) =>{
 
 
 
-
-
-
-
-
-
-
-
-  /* app.post("/api/promote-user", (req, res) => {
+/*   app.post("/api/promote-user", (req, res) => {
     const { email, role } = req.body;
     usersCollection.updateOne(
       { email },
