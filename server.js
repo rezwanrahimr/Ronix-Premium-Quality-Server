@@ -69,7 +69,11 @@ client.connect((err) => {
     });
   });
 
-
+// Get all users.
+app.get('/user',async(req,res) =>{
+  const users = await usersCollection.find().toArray();
+  res.send(users);
+})
 
   // Create a new account
   app.post("/api/create-account", async (req, res) => {
