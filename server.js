@@ -40,6 +40,24 @@ client.connect((err) => {
   const ordersCollection = client.db("Ronix").collection("orders");
   const toolsCollection = client.db("Ronix").collection("tools");
   const reviewsCollection = client.db("Ronix").collection("review");
+  const profileCollection = client.db("Ronix").collection("profile");
+  
+  // Store Profile Data.
+  app.post("/api/update-profile", async (req, res) => {
+    profileCollection.insertOne(req.body, (err, result) => {
+      if (err) {
+        res.status(500).send({
+          status: 0,
+          message: "Error Occured",
+        });
+      } else {
+        res.status(201).send({
+          status: 1,
+          message: "Product Added Successfully",
+        });
+      }
+    });
+  });
 
   // Create a new account
   app.post("/api/create-account", async (req, res) => {
