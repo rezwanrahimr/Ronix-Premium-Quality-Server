@@ -36,7 +36,7 @@ client.connect((err) => {
     `${!!err ? "Database Connection Failed" : "Database Connection Successful"}`
   );
   const productsCollection = client.db("Ronix").collection("products");
-  const usersCollection = client.db("Ronix").collection("users");
+  const userCollection = client.db("Ronix").collection("users");
   const ordersCollection = client.db("Ronix").collection("orders");
   const toolsCollection = client.db("Ronix").collection("tools");
   const reviewsCollection = client.db("Ronix").collection("review");
@@ -68,6 +68,21 @@ client.connect((err) => {
       profile,
     });
   });
+
+  // Store user
+  app.put('/user/:email',async(req,res) =>{
+     const email = req.params.email;
+     const user = req.body;
+      const filter = {email: email};
+      const options = {upsert: true};
+      const updateDoc = {
+        $set: {
+          plot: user,
+        },
+      }
+      const result = await userCollection.updateOne(filter,updateDoc,options);
+      res.send(result);
+  })
 
   // Create a new account
   /* app.post("/api/create-account", async (req, res) => {
