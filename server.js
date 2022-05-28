@@ -110,7 +110,7 @@ app.get('/user',async(req,res) =>{
   });
 
   // Make Admin
- app.put('/user/admin/:email',async(req,res) =>{
+ app.put('/user/:email',async(req,res) =>{
    const email = req.params.email;
    const filter = {email: email};
    const updateDoc = {
