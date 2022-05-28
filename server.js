@@ -110,7 +110,28 @@ app.get('/user',async(req,res) =>{
   });
 
   // Make Admin
-  app.post("/api/promote-user", (req, res) => {
+ app.put('/user/admin/:email',async(req,res) =>{
+   const email = req.params.email;
+   const filter = {email: email};
+   const updateDoc = {
+     $set: {role: 'admin'},
+   };
+   const result = await usersCollection.updateOne(filter,updateDoc);
+   res.send(result);
+ })
+
+
+
+
+
+
+
+
+
+
+
+
+  /* app.post("/api/promote-user", (req, res) => {
     const { email, role } = req.body;
     usersCollection.updateOne(
       { email },
@@ -129,7 +150,7 @@ app.get('/user',async(req,res) =>{
         }
       }
     );
-  });
+  }); */
 
   //  Get Single Product
   app.get("/api/product/:id", async (req, res) => {
