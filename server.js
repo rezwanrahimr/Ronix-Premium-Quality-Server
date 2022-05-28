@@ -5,11 +5,8 @@ const ObjectID = require("mongodb").ObjectID;
 const cors = require("cors");
 const Stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 require("dotenv").config();
-
-// Define Port Number
 const port = process.env.PORT || 8080;
 
-// Use Cors and bodyParser
 app.use(
   cors({
     origin: "*",
@@ -21,8 +18,7 @@ app.use(
 app.use(express.json());
 
 app.get("/", (req, res) => {
-
-  res.send("Hello World");
+res.send("Hello World");
 });
 
 // MongoDB Connection
@@ -79,7 +75,6 @@ app.get('/user',async(req,res) =>{
   app.post("/api/create-account", async (req, res) => {
     const { email, role, profile_picture } = req.body;
     const user = await usersCollection.findOne({ email });
-
     if (!user) {
       usersCollection.insertOne(
         {
@@ -120,9 +115,6 @@ app.get('/user',async(req,res) =>{
    res.send(result);
  })
 
-
-
-
 /*   app.post("/api/promote-user", (req, res) => {
     const { email, role } = req.body;
     usersCollection.updateOne(
@@ -144,6 +136,7 @@ app.get('/user',async(req,res) =>{
     );
   }); */
 
+
   //  Get Single Product
   app.get("/api/product/:id", async (req, res) => {
     const { id } = req.params;
@@ -162,6 +155,7 @@ app.get('/user',async(req,res) =>{
     }
   });
 
+
   // Get All Products
   app.get("/api/products", async (req, res) => {
     const products = await productsCollection.find().toArray();
@@ -171,6 +165,7 @@ app.get('/user',async(req,res) =>{
       products,
     });
   });
+
 
   // Store Product
   app.post("/api/add-product", async (req, res) => {
@@ -188,6 +183,7 @@ app.get('/user',async(req,res) =>{
       }
     });
   });
+
 
   // Update Product
   app.post("/api/update-product", async (req, res) => {
@@ -218,6 +214,7 @@ app.get('/user',async(req,res) =>{
       });
     }
   });
+
 
   // Delete Product
   app.post("/api/delete-product", async (req, res) => {
@@ -256,7 +253,6 @@ app.get('/user',async(req,res) =>{
           payment_method_types: ["card"],
         });
         if (payment.client_secret) {
-
           res.status(201).send({
             status: 1,
             message: "Order Placed Successfully",
@@ -279,8 +275,6 @@ app.get('/user',async(req,res) =>{
           message: "Error Occured",
         });
       }
-
-
     } catch (error) {
 
       res.status(500).send({
@@ -292,11 +286,11 @@ app.get('/user',async(req,res) =>{
 
   });
 
+
   app.post("/api/re-payment", async (req, res) => {
     const { total, id } = req.body;
 
     try {
-
       const payment = await Stripe.paymentIntents.create({
         amount: total * 100,
         currency: "usd",
@@ -327,9 +321,8 @@ app.get('/user',async(req,res) =>{
       });
 
     }
-
-
   });
+
 
   // Update Order Status
   app.post("/api/update-order-status", async (req, res) => {
@@ -351,6 +344,7 @@ app.get('/user',async(req,res) =>{
     }
   });
 
+
   // Get All Orders
   app.get("/api/orders", async (req, res) => {
     const orders = await ordersCollection.find().toArray();
@@ -360,6 +354,7 @@ app.get('/user',async(req,res) =>{
       orders,
     });
   });
+
 
   // Get Single Order
   app.get("/api/get-order", async (req, res) => {
@@ -378,6 +373,7 @@ app.get('/user',async(req,res) =>{
       });
     }
   });
+
 
   // Delete Order
   app.post("/api/delete-order", async (req, res) => {
@@ -406,6 +402,8 @@ app.get('/user',async(req,res) =>{
       }
     }
   });
+
+
   // get all tools items.
   app.get("/tools", async (req, res) => {
     const quarry = {};
@@ -414,6 +412,7 @@ app.get('/user',async(req,res) =>{
     res.send(tools);
   })
 
+
   // add a new tools
   app.post("/tools", async (req, res) => {
     const addNewItem = req.body;
@@ -421,13 +420,13 @@ app.get('/user',async(req,res) =>{
     res.send(result);
   });
 
+
   // Avilabe Quantity decrease.
   app.post("/available/:id", async (req, res) => {
     if (Number(req.body.availableQuantity < 0)) {
       res.send({ status: 0, message: 'Oops! Stock out' });
       return;
     }
-
     const id = req.params.id;
     const quarry = { _id: ObjectId(id) };
     const result = await toolsCollection.updateOne(quarry, {
@@ -441,6 +440,7 @@ app.get('/user',async(req,res) =>{
     }
 
   });
+
 
   // increase Quantity.
   app.post("/increase/:id", async (req, res) => {
@@ -462,6 +462,7 @@ app.get('/user',async(req,res) =>{
     }
   });
 
+
   // Insert Reviews.
   app.post("/review", (req, res) => {
     reviewsCollection.insertOne(req.body, (err) => {
@@ -477,6 +478,7 @@ app.get('/user',async(req,res) =>{
     })
   });
 
+
   // get all review
   app.get("/review", async (req, res) => {
     const quarry = {};
@@ -487,7 +489,6 @@ app.get('/user',async(req,res) =>{
 
 
 });
-
 app.listen(port, () => {
   console.log(`App Listening at http://localhost:${port}`);
 });
