@@ -43,7 +43,7 @@ client.connect((err) => {
   const profileCollection = client.db("Ronix").collection("profile");
   
   // Store Profile Data.
-  app.put("/api/update-profile", async (req, res) => {
+  app.patch("/api/update-profile", async (req, res) => {
     profileCollection.updateOne(req.body, (err, result) => {
       if (err) {
         res.status(500).send({
