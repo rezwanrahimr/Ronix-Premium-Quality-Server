@@ -43,16 +43,20 @@ client.connect((err) => {
   const profileCollection = client.db("Ronix").collection("profile");
   
   // Store Profile Data.
-  app.patch("/api/user/:email", async (req, res) => {
-    const email = req.params.email;
-    const user = req.body;
-    const filter = {email: email};
-    const options = {upsert: true};
-    const updateDoc = {
-      $set: user,
-    };
-    const result = await productsCollection.updateOne(filter,updateDoc,options);
-    res.send(result);
+  app.post("/api/update-profile", async (req, res) => {
+    profileCollection.insertOne(req.body, (err, result) => {
+      if (err) {
+        res.status(500).send({
+          status: 0,
+          message: "Error Occured",
+        });
+      } else {
+        res.status(201).send({
+          status: 1,
+          message: "Product Added Successfully",
+        });
+      }
+    });
   });
 
   // Get Profile Data.
@@ -66,7 +70,7 @@ client.connect((err) => {
   });
 
   // Create a new account
-  app.post("/api/create-account", async (req, res) => {
+  /* app.post("/api/create-account", async (req, res) => {
     const { email, role, profile_picture } = req.body;
     const user = await usersCollection.findOne({ email });
 
@@ -119,7 +123,7 @@ client.connect((err) => {
         }
       }
     );
-  });
+  }); */
 
   //  Get Single Product
   app.get("/api/product/:id", async (req, res) => {
