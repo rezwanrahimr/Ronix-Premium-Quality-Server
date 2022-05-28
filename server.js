@@ -59,6 +59,16 @@ client.connect((err) => {
     });
   });
 
+  // Get Profile Data.
+  app.get("/api/profile", async (req, res) => {
+    const profile = await profileCollection.find().toArray();
+    res.status(200).send({
+      status: 1,
+      message: "Profile Found",
+      profile,
+    });
+  });
+
   // Create a new account
   app.post("/api/create-account", async (req, res) => {
     const { email, role, profile_picture } = req.body;
